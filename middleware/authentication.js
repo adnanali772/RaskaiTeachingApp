@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const UserModal = require('../Modals/user_modal');
 const asyncHandler = require('express-async-handler');
 
-
  exports.protect = asyncHandler( async (req,res,next)=>{
   let token;
 if( req.headers.authorization && 
