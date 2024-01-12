@@ -185,20 +185,6 @@ exports.ImgeUpload = (req,res)=>{
     res.render('upload');
 }
 
-exports.FindAllUsers = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const pageSize = parseInt(req.query.pageSize) || 10;
 
-        const skip = (page - 1) * pageSize;
-
-        const users = await usermoadal.find().skip(skip).limit(pageSize);
-
-        res.status(200).json({ users, currentPage: page, pageSize });
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-}
 
 
