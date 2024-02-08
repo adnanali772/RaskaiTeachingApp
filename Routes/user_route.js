@@ -18,5 +18,7 @@ router.post('/uploadfile',upload.single('image'),user_controller.ImageSave);
 router.get('/logout',user_controller.logoutUser);
 router.delete('/delete/:id',user_controller.deleteUser);
 router.post('/update/:id', user_controller.updateUser);
+router.post('/sendmessage',user_controller.saveMessage);
+router.get('/allmessages', user_controller.allMessages);
 
 module.exports = router

@@ -1,11 +1,11 @@
 const multer = require('multer');
 var admin = require("firebase-admin");
-var serviceAccount = require("./raskai-fbbdc-firebase-adminsdk-lorng-608e1ca361.json");
+var serviceAccount = require("../Routes/raskaiteaching-firebase-adminsdk-aekip-a3656d423c.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://raskai-fbbdc-default-rtdb.firebaseio.com",
-    storageBucket: "gs://raskai-fbbdc.appspot.com"
+    databaseURL: "https://raskaiteaching.firebaseio.com",
+    storageBucket: "gs://raskaiteaching.appspot.com"
 });
 
 

@@ -1,20 +1,20 @@
-const usermoadal =  require('../Modals/user_modal');
+const usermoadal = require('../Modals/user_modal');
 const UserImg = require('../Modals/Image_upload');
+const messageModal = require('../Modals/message_modal')
 const { Storage } = require('@google-cloud/storage');
-const bucket = new Storage().bucket("gs://raskai-fbbdc.appspot.com");
+const bucket = new Storage().bucket("gs://raskaiteaching.appspot.com");
 
 
 
-
-exports.home = (req,res)=>{
+exports.home = (req, res) => {
     res.render('Project');
 }
 
-exports.loginPage = (req, res)=>{
+exports.loginPage = (req, res) => {
     res.render('login');
 }
 
-exports.userRegister = async (req,res)=>{
+exports.userRegister = async (req, res) => {
     const userDetail = {
         name: req.body.name,
         email: req.body.email,
@@ -37,73 +37,73 @@ exports.userRegister = async (req,res)=>{
     }
 }
 
-exports.userLogin = async (req,res) => { 
-  const {email, password } = req.body;
-  try {
-    const user = await usermoadal.findOne({email});
-    console.log(user);
-    if (user && await (user.matchPassword(password))) {
-        req.session.user = user;
-        if(user.role === "admin"){
-            res.redirect(`/admin`);
-        }else{
-            res.redirect(`/dasboard`);
-        } 
+exports.userLogin = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await usermoadal.findOne({ email });
+        console.log(user);
+        if (user && await (user.matchPassword(password))) {
+            req.session.user = user;
+            if (user.role === "admin") {
+                res.redirect(`/admin`);
+            } else {
+                res.redirect(`/dasboard`);
+            }
+        }
+        else {
+            console.log('UserNotFound');
+            res.send("User Not Exist /n try Again:")
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
     }
-    else{
-        console.log('UserNotFound');
-        res.send("User Not Exist /n try Again:")
-    }
-} catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
- }
 }
 
-exports.logoutUser = async (req,res) => {
+exports.logoutUser = async (req, res) => {
     req.session.destroy(err => {
         if (err) {
-          console.error('Error destroying session:', err);
+            console.error('Error destroying session:', err);
         } else {
-          res.redirect('/login');
+            res.redirect('/login');
         }
-      });
+    });
 }
 
-exports.deleteUser =  async (req,res)=>{
-    const {id}= req.params
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params
     console.log("User Id for delete===>", id);
     const deletedUser = await usermoadal.findByIdAndDelete(id);
     if (!deletedUser) {
         return res.status(404).json({ error: 'User not found' });
-      }
-      else{
+    }
+    else {
         return res.status(200).redirect(`/admin`);
-      }
+    }
 }
 
-exports.updateUser = async (req,res)=>{
+exports.updateUser = async (req, res) => {
     try {
         const { id } = req.params; // Assuming the user ID is in the URL params
         const updateData = req.body; // Assuming the updated data is in the request body
 
         console.log("user ID:", id);
-        console.log("User update Details:",  req.body);
+        console.log("User update Details:", req.body);
 
 
         if (!id.match(/^[0-9a-fA-F]{24}$/)) {
             return res.status(400).json({ error: 'Invalid user ID' });
         }
         const updatedUser = await usermoadal.findByIdAndUpdate(id, updateData, { new: true });
-       
-        
+
+
         if (!updatedUser) {
             return res.status(404).json({ error: 'User not found' });
-        }else{
+        } else {
             res.redirect(`/admin`);
         }
 
-        
+
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -117,11 +117,11 @@ exports.dashboard = async (req, res) => {
     try {
         const userImage = await UserImg.find({ user: _id });
         if (userImage && userImage.length > 0 && userImage[0].Img) {
-             var imgBuffer = userImage[0].Img;
-             imgBase64 = imgBuffer.toString('base64');
+            var imgBuffer = userImage[0].Img;
+            imgBase64 = imgBuffer.toString('base64');
             const currentDate = new Date();
             const currentHour = currentDate.getHours();
-            
+
             if (currentHour < 12) {
                 messages = "Good Morning!";
             } else if (currentHour === 12) {
@@ -140,51 +140,92 @@ exports.dashboard = async (req, res) => {
     }
 }
 
-exports.ImageSave =  async (req, res) => {
+exports.ImageSave = async (req, res) => {
     try {
-        if(!req.file){
+        if (!req.file) {
             return res.status(400).send("No fileUpload ");
         }
         const metadata = {
             contentType: req.file.mimetype,
         };
-          const blob = bucket.file(`profileimages/${req.file.originalname}`);
-          const blobStream = blob.createWriteStream({
-              metadata: metadata,
-              gzip: true
-          });
-  
-          blobStream.on('error', err =>{
-              console.log("error uploading",err)
-              return res.status(500).json({
-                  err: "Unable to upload image"
-              })
-          })
-          blobStream.on('finish',  async ()=>{
-              const imageurl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-              const { _id } = req.session.user;
-              const newImage = new UserImg({
+        const blob = bucket.file(`profileimages/${req.file.originalname}`);
+        const blobStream = blob.createWriteStream({
+            metadata: metadata,
+            gzip: true
+        });
+
+        blobStream.on('error', err => {
+            console.log("error uploading", err)
+            return res.status(500).json({
+                err: "Unable to upload image"
+            })
+        })
+        blobStream.on('finish', async () => {
+            const imageurl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+            const { _id } = req.session.user;
+            const newImage = new UserImg({
                 user: _id,
                 Img: imageurl,
-              });
-              console.log("new image :", newImage)
-              await newImage.save();
-              res.status(201).redirect(`/dasboard`);
+            });
+            console.log("new image :", newImage)
+            await newImage.save();
+            res.status(201).redirect(`/dasboard`);
 
-          });
-  
-          blobStream.end(req.file.buffer);
-          
-        } catch (error) {
-          console.error(error);
-          res.status(500).send('Internal Server Error');
-        }
+        });
+
+        blobStream.end(req.file.buffer);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 }
 
-exports.ImgeUpload = (req,res)=>{
+exports.ImgeUpload = (req, res) => {
     res.render('upload');
 }
 
 
+exports.saveMessage = async (req, res) => {
+    try {
+        const messageContent = req.body.message;
 
+        // Assuming you have a user ID from authentication
+        const userId = req.body.userId; 
+        
+        // Create a new UserMessage instance
+        const userMessage = new messageModal({
+            message: messageContent,
+            user: userId
+        });
+    
+        // Save the message into the database
+        const data = await userMessage.save();
+    
+        
+        // Redirect or send a response as needed
+        res.status(200).json({ success: true, message: 'Message saved successfully', redirect: `/dasboard` });// Replace with your actual redirect or response
+    } catch (error) {
+        console.error("Error saving message:", error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+}
 
+exports.allMessages = async (req, res) => {
+    try {
+        // Fetch all messages from the database
+        const messages = await messageModal.find().populate({
+            path: 'user',
+            populate: {
+                path: 'image',
+                model: 'Image'
+            }
+        });
+
+        // Respond with the messages
+        res.status(200).json({ success: true, messages });
+    } catch (error) {
+        console.error("Error retrieving messages:", error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+}

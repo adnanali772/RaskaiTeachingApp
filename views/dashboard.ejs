@@ -1,64 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css">
+
 </head>
+
 <body>
     <div class="all">
         <nav class="navigation">
             <div class="portrait">
-                    <% if (imgBase64) { %>
-                        
-                        <!-- Display the uploaded image -->
-                        <img src="<%= imgBase64 %>" alt="User Image" id="user_profile">
+                <% if (imgBase64) { %>
+
+                    <!-- Display the uploaded image -->
+                    <img src="<%= imgBase64 %>" alt="User Image" id="user_profile">
                     <% } else { %>
-                        <a href="/uploadfile"  >
-                        <!-- Display a default image or placeholder if imgBase64 is not defined -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8q0-1.65 1.175-2.825T12 4q1.65 0 2.825 1.175T16 8q0 1.65-1.175 2.825T12 12Zm-8 8v-2.8q0-.85.438-1.563T5.6 14.55q1.55-.775 3.15-1.163T12 13q1.65 0 3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2V20H4Z" id="link-color"/></svg>
-                    </a>
+                        <a href="/uploadfile">
+                            <!-- Display a default image or placeholder if imgBase64 is not defined -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M12 12q-1.65 0-2.825-1.175T8 8q0-1.65 1.175-2.825T12 4q1.65 0 2.825 1.175T16 8q0 1.65-1.175 2.825T12 12Zm-8 8v-2.8q0-.85.438-1.563T5.6 14.55q1.55-.775 3.15-1.163T12 13q1.65 0 3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2V20H4Z"
+                                    id="link-color" />
+                            </svg>
+                        </a>
                         <% } %>
             </div>
             <div class="nav-items">
                 <div class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path fill="currentColor" d="M946.5 505L534.6 93.4a31.93 31.93 0 0 0-45.2 0L77.5 505c-12 12-18.8 28.3-18.8 45.3c0 35.3 28.7 64 64 64h43.4V908c0 17.7 14.3 32 32 32H448V716h112v224h265.9c17.7 0 32-14.3 32-32V614.3h43.4c17 0 33.3-6.7 45.3-18.8c24.9-25 24.9-65.5-.1-90.5z"/></svg>
-                 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                        <path fill="currentColor"
+                            d="M946.5 505L534.6 93.4a31.93 31.93 0 0 0-45.2 0L77.5 505c-12 12-18.8 28.3-18.8 45.3c0 35.3 28.7 64 64 64h43.4V908c0 17.7 14.3 32 32 32H448V716h112v224h265.9c17.7 0 32-14.3 32-32V614.3h43.4c17 0 33.3-6.7 45.3-18.8c24.9-25 24.9-65.5-.1-90.5z" />
+                    </svg>
+
                 </div>
                 <div class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h4l3 8l4-16l3 8h4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M3 12h4l3 8l4-16l3 8h4" />
+                    </svg>
                 </div>
                 <div class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="416" height="512" viewBox="0 0 416 512"><path fill="currentColor" d="M272 96c26.51 0 48-21.49 48-48S298.51 0 272 0s-48 21.49-48 48s21.49 48 48 48zM113.69 317.47l-14.8 34.52H32c-17.67 0-32 14.33-32 32s14.33 32 32 32h77.45c19.25 0 36.58-11.44 44.11-29.09l8.79-20.52l-10.67-6.3c-17.32-10.23-30.06-25.37-37.99-42.61zM384 223.99h-44.03l-26.06-53.25c-12.5-25.55-35.45-44.23-61.78-50.94l-71.08-21.14c-28.3-6.8-57.77-.55-80.84 17.14l-39.67 30.41c-14.03 10.75-16.69 30.83-5.92 44.86s30.84 16.66 44.86 5.92l39.69-30.41c7.67-5.89 17.44-8 25.27-6.14l14.7 4.37l-37.46 87.39c-12.62 29.48-1.31 64.01 26.3 80.31l84.98 50.17l-27.47 87.73c-5.28 16.86 4.11 34.81 20.97 40.09c3.19 1 6.41 1.48 9.58 1.48c13.61 0 26.23-8.77 30.52-22.45l31.64-101.06c5.91-20.77-2.89-43.08-21.64-54.39l-61.24-36.14l31.31-78.28l20.27 41.43c8 16.34 24.92 26.89 43.11 26.89H384c17.67 0 32-14.33 32-32s-14.33-31.99-32-31.99z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="416" height="512" viewBox="0 0 416 512">
+                        <path fill="currentColor"
+                            d="M272 96c26.51 0 48-21.49 48-48S298.51 0 272 0s-48 21.49-48 48s21.49 48 48 48zM113.69 317.47l-14.8 34.52H32c-17.67 0-32 14.33-32 32s14.33 32 32 32h77.45c19.25 0 36.58-11.44 44.11-29.09l8.79-20.52l-10.67-6.3c-17.32-10.23-30.06-25.37-37.99-42.61zM384 223.99h-44.03l-26.06-53.25c-12.5-25.55-35.45-44.23-61.78-50.94l-71.08-21.14c-28.3-6.8-57.77-.55-80.84 17.14l-39.67 30.41c-14.03 10.75-16.69 30.83-5.92 44.86s30.84 16.66 44.86 5.92l39.69-30.41c7.67-5.89 17.44-8 25.27-6.14l14.7 4.37l-37.46 87.39c-12.62 29.48-1.31 64.01 26.3 80.31l84.98 50.17l-27.47 87.73c-5.28 16.86 4.11 34.81 20.97 40.09c3.19 1 6.41 1.48 9.58 1.48c13.61 0 26.23-8.77 30.52-22.45l31.64-101.06c5.91-20.77-2.89-43.08-21.64-54.39l-61.24-36.14l31.31-78.28l20.27 41.43c8 16.34 24.92 26.89 43.11 26.89H384c17.67 0 32-14.33 32-32s-14.33-31.99-32-31.99z" />
+                    </svg>
                 </div>
                 <div class="nav-item">
                     <a href="/logout" id="link-color">
-                    <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    width="40"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
-                    <polyline points="10 17 15 12 10 7"></polyline>
-                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                  </svg>
-                </a>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </nav>
         <div class="content">
             <div class="greeting">
-                <h2> <%=messages %> <%= name %></h2>
-                <p><%= email %> 🌞</p>
+                <h2>
+                    <%=messages %>
+                        <%= name %>
+                </h2>
+                <p>
+                    <%= email %> 🌞
+                </p>
+                <div class="layout-container">
+                    <div class="container">
+                        <header class="header">
+                            <input type="text" id="filter" placeholder="Search by name and/or location">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </header>
+                        <ul id="result" class="user-list">
+                            <li>
+                                <h3>Loading...</h3>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bodymain">
+                        <section class="msger">
+                            <header class="msger-header">
+                                <div class="msger-header-title">
+                                    <i class="fa fa-comments"></i> Chat
+                                </div>
+                                <div class="msger-header-options">
+                                    <span><i class="fa fa-cog"></i></span>
+                                </div>
+                            </header>
+                            <main class="msger-chat" id="chatArea">
+                                <div class="msg left-msg">
+
+                                </div>
+
+                                <div class="msg right-msg">
+
+                                </div>
+                            </main>
+
+                            <form class="msger-inputarea" id="messageForm">
+                                <input type="text" class="msger-input" placeholder="Enter your message..."
+                                    id="messageInput">
+                                <button type="submit" class="msger-send-btn">Send</button>
+                            </form>
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </body>
+<script>
+    // Establish a connection to the Socket.IO server
+    const socket = io();
+
+    // You can now use 'socket' to send/receive events
+    // For example:
+    socket.on('connect', () => {
+        console.log('Connected to server');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+    });
+
+    const result = document.getElementById("result");
+    const filter = document.getElementById("filter");
+    const listItems = [];
+    // Declare _id here using EJS syntax
+    const _id = "<%= _id %>";
+
+
+    // getData();
+    getMessageData();
+
+    
+    //  @#$%^&*()(*&^%$#!@#$%^&*()_))(*&^%$#@!#$%^&*()_)(*&^%$#@#$%^&*()_)(*&^%$#@)
+
+    function createUserListItem(user) {
+            const li = document.createElement("li");
+            li.id = user.id;
+            li.innerHTML = `
+                <div class="user-info">
+                    <h4>${user.name}</h4>
+                    <p class="status">Status: ${user.online ? 'Online' : 'Offline'}</p>
+                </div>
+            `;
+            return li;
+        }
+
+        socket.on('currentUsers', (users) => {
+            // Clear results
+            result.innerHTML = "";
+            users.forEach((user) => {
+                const li = createUserListItem(user);
+                result.appendChild(li);
+            });
+        });
+
+        socket.on('userConnected', (user) => {
+            const li = createUserListItem(user);
+            result.appendChild(li);
+        });
+
+        socket.on('userDisconnected', (userId) => {
+            const userLi = document.getElementById(userId);
+            if (userLi) {
+                userLi.remove();
+            }
+        });
+
+        //  @#$%^&*()(*&^%$#!@#$%^&*()_))(*&^%$#@!#$%^&*()_)(*&^%$#@#$%^&*()_)(*&^%$#@)
+
+
+
+    // filter.addEventListener("input", (e) => filterData(e.target.value));
+
+    // async function getData() {
+    //     const res = await fetch("https://randomuser.me/api?results=50");
+    //     const { results } = await res.json();
+
+    //     // Clear results
+    //     result.innerHTML = "";
+    //     results.forEach((user) => {
+    //         const li = document.createElement("li");
+    //         listItems.push(li);
+    //         li.innerHTML = `
+    //     <img src="${user.picture.large}" alt="${user.name.first}">
+    //     <div class="user-info">
+    //         <h4>${user.name.first} ${user.name.last}</h4>
+    //         <p>${user.location.city}, ${user.location.country}</p>
+    //     </div>
+    //     `;
+    //         result.appendChild(li);
+    //     });
+    // }
+
+    // function filterData(searchTerm) {
+    //     listItems.forEach((item) => {
+    //         if (item.innerText.toLowerCase().includes(searchTerm.toLowerCase())) {
+    //             item.classList.remove("hide");
+    //         } else {
+    //             item.classList.add("hide");
+    //         }
+    //     });
+    // }
+
+    const messageForm = document.getElementById("messageForm");
+    const messageInput = document.getElementById("messageInput");
+    const chatArea = document.getElementById("chatArea");
+    
+    socket.on('recievedMessage', (data) => {
+        console.log("Message recievd from socket==>", data)
+    // Assuming you have a function to update the UI with the new message
+    updateUI(data.senderName, data.message, data.createdAt);
+});
+
+
+    // Add an event listener to the form
+    messageForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Get the message from the input field
+        const message = messageInput.value.trim();
+
+        // Check if the message is not empty
+        if (message !== "") {
+
+            try {
+                // socket.emit('sendMessage', { message, senderId: _id });
+                const response = await fetch("sendmessage", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ message, userId: _id }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data); // Handle the response data as needed
+                    socket.emit('sendMessage', { message, senderId: _id });
+                    // Redirect to the specified URL
+                    window.location.href = data.redirect;
+                } else {
+                    console.error(`Error: ${response.statusText}`);
+
+                    // Handle HTML error response
+                    const htmlError = await response.text();
+                    console.error("HTML Error Response:", htmlError);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+            // Clear the input field after sending the message
+            messageInput.value = "";
+        }
+    });
+
+    // Function to update UI with new message
+function updateUI(senderId, message, createdAt) {
+    console.log("Value come with socket ",senderId, message, createdAt );
+    // Assuming you have a function to append the new message to the chat area
+    appendMessageToChat(senderId, message, createdAt);
+}
+
+// Function to append a new message to the chat area
+function appendMessageToChat(senderId, message, createdAt) {
+    // Customize this part based on your UI structure
+    const newMsgElement = document.createElement("div");
+    newMsgElement.classList.add("msg");
+    newMsgElement.innerHTML = `
+        <div class="msg-img" style="background-image: url(https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D)"></div>
+        <div class="msg-bubble">
+            <div class="msg-info">
+                <div class="msg-info-name">${senderId}</div>
+                <div class="msg-info-time">${formatTime(createdAt)}</div>
+            </div>
+            <div class="msg-text">${message}</div>
+        </div>
+    `;
+
+    // Append the new message element to the chat area
+    chatArea.appendChild(newMsgElement);
+
+    // Optionally, scroll the chat area to the bottom to show the latest messages
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+    async function getMessageData() {
+        try {
+            const response = await fetch("/allmessages");
+            const { success, messages } = await response.json();
+
+            if (success) {
+                // Clear results
+                result.innerHTML = "";
+                messages.forEach((message) => {
+                    const newMsgElement = document.createElement("div");
+                    newMsgElement.classList.add("msg");
+
+                    // Determine if the message is from the current user or another user
+                    const isCurrentUser = message.user && message.user._id === _id;
+
+                    newMsgElement.classList.add(isCurrentUser ? "right-msg" : "left-msg");
+
+                    // Customize this part based on your message structure
+                    newMsgElement.innerHTML = `
+                    <div class="msg-img" style="background-image: url(https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D)"></div>
+                    <div class="msg-bubble">
+                        <div class="msg-info">
+                            <div class="msg-info-name">${message.user ? message.user.name : 'Unknown User'}</div>
+                            <div class="msg-info-time">${formatTime(message.createdAt)}</div>
+                        </div>
+                        <div class="msg-text">${message.message}</div>
+                    </div>
+                `;
+
+                    // Append the new message element to the chat area
+                    chatArea.appendChild(newMsgElement);
+
+                    // Optionally, scroll the chat area to the bottom to show the latest messages
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                });
+            } else {
+                console.error("Error fetching messages:", messages);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+
+        // Extracting hours and minutes
+        const hours = date.getHours();
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+
+        // Create a string in the format HH:mm
+        const formattedTime = `${hours}:${minutes}`;
+
+        return formattedTime;
+    }
+
+</script>
+
 </html>

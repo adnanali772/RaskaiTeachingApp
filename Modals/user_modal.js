@@ -18,6 +18,10 @@ const UserSchema = mongoose.Schema({
         type: String,
         enum: ['admin', 'teacher', 'student'],
         default: 'student'
+    },
+    image: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image'
     }
 });
 
